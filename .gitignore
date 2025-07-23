@@ -1,0 +1,64 @@
+# Flutter/Dart/Pub related
+.dart_tool/
+.packages
+.pub/
+build/
+.flutter-plugins
+.flutter-plugins-dependencies
+.flutter-versions
+
+# IDEs and editors
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+*.swp
+*.swo
+*.DS_Store
+
+# Xcode
+ios/Pods/
+ios/Podfile.lock
+ios/Flutter/Flutter.podspec
+ios/Flutter/Generated.xcconfig
+ios/Flutter/ephemeral/
+ios/Runner.xcworkspace/
+ios/Runner.xcodeproj/project.xcworkspace/
+ios/Runner.xcodeproj/xcuserdata/
+ios/Runner.xcodeproj/project.xcworkspace/xcuserdata/
+ios/Runner.xcodeproj/xcshareddata/WorkspaceSettings.xcsettings
+
+# CocoaPods
+ios/Pods/
+
+# Output and artifacts
+output/
+*.ipa
+*.xcarchive
+*.aab
+*.apk
+*.app.dSYM
+*.dSYM.zip
+*.dSYM
+*.log
+*.tmp
+*.bak
+*.backup*
+
+# User-specific
+*.orig
+*.swp
+*.swo
+*.tmp
+*.bak
+*.backup*
+
+# Misc
+pubspec.lock
+lib/scripts.zip
+FIREBASE_INJECTION_SUMMARY.txt
+
+# Test and temp
+coverage/
+*.test_scripts.sh 

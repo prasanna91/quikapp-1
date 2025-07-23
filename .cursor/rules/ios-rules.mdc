@@ -1,0 +1,8 @@
+---
+alwaysApply: true
+---
+description: |
+  Do not make direct changes to the ios folder in the root directory.
+  If any modifications are required, use shell scripts (.sh) to perform those changes automatically.
+  All ios folder changes must be scripted and not manual edits.
+

@@ -1,0 +1,8 @@
+#include? "Pods/Target Support Files/Pods-Runner/Pods-Runner.release.xcconfig"
+#include "Generated.xcconfig"
+
+CODE_SIGN_STYLE = Manual
+CODE_SIGN_IDENTITY = Apple Distribution
+DEVELOPMENT_TEAM = $(APPLE_TEAM_ID)
+PROVISIONING_PROFILE_SPECIFIER = $(PROFILE_SPECIFIER_UUID)
+PRODUCT_BUNDLE_IDENTIFIER = $(NEW_BUNDLE_ID)

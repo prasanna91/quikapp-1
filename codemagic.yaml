@@ -1,0 +1,718 @@
+# 🚀 Common Variables Block - Shared across all workflows
+common_vars: &common_vars
+  GRADLE_OPTS: "-Xmx12G -XX:MaxMetaspaceSize=3G -XX:ReservedCodeCacheSize=1G -XX:+UseG1GC -XX:MaxGCPauseMillis=50 -XX:+UseStringDeduplication -XX:+OptimizeStringConcat -XX:+TieredCompilation -XX:TieredStopAtLevel=1"
+  XCODE_PARALLEL_JOBS: "8"
+
+  # 🔧 Build Stability Variables
+  GRADLE_DAEMON: "true"
+  GRADLE_PARALLEL: "true"
+  GRADLE_CACHING: "true"
+  GRADLE_OFFLINE: "false"
+  GRADLE_CONFIGURE_ON_DEMAND: "true"
+  GRADLE_BUILD_CACHE: "true"
+  GRADLE_WORKER_MAX_HEAP_SIZE: "2G"
+
+  # 🎯 Flutter Optimizations
+  FLUTTER_PUB_CACHE: "true"
+  FLUTTER_VERBOSE: "false"
+  FLUTTER_ANALYZE: "true"
+  FLUTTER_TEST: "false"
+  FLUTTER_BUILD_NUMBER: "auto"
+
+  # 📦 Asset & Network Optimizations
+  ASSET_OPTIMIZATION: "true"
+  IMAGE_COMPRESSION: "true"
+  PARALLEL_DOWNLOADS: "true"
+  DOWNLOAD_TIMEOUT: "300"
+  DOWNLOAD_RETRIES: "3"
+
+  # 🛡️ Error Prevention
+  FAIL_ON_WARNINGS: "false"
+  CONTINUE_ON_ERROR: "true"
+
+  # 📧 Email Notifications
+  ENABLE_EMAIL_NOTIFICATIONS: "true"
+  EMAIL_SMTP_SERVER: "smtp.gmail.com"
+  EMAIL_SMTP_PORT: "587"
+  EMAIL_SMTP_USER: "prasannasrie@gmail.com"
+  EMAIL_SMTP_PASS: "lrnu krfm aarp urux"
+
+  # 🔄 Build Recovery
+  ENABLE_BUILD_RECOVERY: "true"
+  CLEAN_ON_FAILURE: "true"
+  CACHE_ON_SUCCESS: "true"
+
+# 📱 App Configuration Block
+app_config: &app_config
+  APP_ID: $APP_ID
+  BRANCH: $BRANCH
+  VERSION_NAME: $VERSION_NAME
+  VERSION_CODE: $VERSION_CODE
+  APP_NAME: $APP_NAME
+  ORG_NAME: $ORG_NAME
+  WEB_URL: $WEB_URL
+  EMAIL_ID: $EMAIL_ID
+  USER_NAME: $USER_NAME
+
+# 🔧 Feature Flags Block
+feature_flags: &feature_flags
+  IS_CHATBOT: $IS_CHATBOT
+  IS_SPLASH: $IS_SPLASH
+  IS_PULLDOWN: $IS_PULLDOWN
+  IS_BOTTOMMENU: $IS_BOTTOMMENU
+  IS_LOAD_IND: $IS_LOAD_IND
+  IS_DOMAIN_URL: $IS_DOMAIN_URL
+  PUSH_NOTIFY: $PUSH_NOTIFY
+
+# 🔐 Permissions Block
+permissions: &permissions
+  IS_CAMERA: $IS_CAMERA
+  IS_LOCATION: $IS_LOCATION
+  IS_MIC: $IS_MIC
+  IS_NOTIFICATION: $IS_NOTIFICATION
+  IS_CONTACT: $IS_CONTACT
+  IS_BIOMETRIC: $IS_BIOMETRIC
+  IS_CALENDAR: $IS_CALENDAR
+  IS_STORAGE: $IS_STORAGE
+
+# 🎨 UI Configuration Block
+ui_config: &ui_config
+  LOGO_URL: $LOGO_URL
+  SPLASH_URL: $SPLASH_URL
+  SPLASH_BG_URL: $SPLASH_BG_URL
+  SPLASH_BG_COLOR: $SPLASH_BG_COLOR
+  SPLASH_TAGLINE: $SPLASH_TAGLINE
+  SPLASH_TAGLINE_COLOR: $SPLASH_TAGLINE_COLOR
+  SPLASH_ANIMATION: $SPLASH_ANIMATION
+  SPLASH_DURATION: $SPLASH_DURATION
+
+  # 🎯 Bottom Menu Configuration
+  BOTTOMMENU_ITEMS: $BOTTOMMENU_ITEMS
+  BOTTOMMENU_BG_COLOR: $BOTTOMMENU_BG_COLOR
+  BOTTOMMENU_ICON_COLOR: $BOTTOMMENU_ICON_COLOR
+  BOTTOMMENU_TEXT_COLOR: $BOTTOMMENU_TEXT_COLOR
+  BOTTOMMENU_FONT: $BOTTOMMENU_FONT
+  BOTTOMMENU_FONT_SIZE: $BOTTOMMENU_FONT_SIZE
+  BOTTOMMENU_FONT_BOLD: $BOTTOMMENU_FONT_BOLD
+  BOTTOMMENU_FONT_ITALIC: $BOTTOMMENU_FONT_ITALIC
+  BOTTOMMENU_ACTIVE_TAB_COLOR: $BOTTOMMENU_ACTIVE_TAB_COLOR
+  BOTTOMMENU_ICON_POSITION: $BOTTOMMENU_ICON_POSITION
+  BOTTOMMENU_VISIBLE_ON: $BOTTOMMENU_VISIBLE_ON
+
+# 🍎 iOS Build Acceleration Block
+ios_build_acceleration: &ios_build_acceleration
+  XCODE_FAST_BUILD: "true"
+  COCOAPODS_FAST_INSTALL: "true"
+  XCODE_SKIP_SIGNING: "false"
+  XCODE_OPTIMIZATION: "true"
+  XCODE_CLEAN_BUILD: "true"
+  XCODE_PARALLEL_BUILD: "true"
+
+# 🍎 iOS Signing Configuration Block
+ios_signing_config: &ios_signing_config
+  APNS_AUTH_KEY_URL: "${APNS_AUTH_KEY_URL:-}"
+  CERT_PASSWORD: "${CERT_PASSWORD:-}"
+  CERT_P12_URL: "${CERT_P12_URL:-}"
+  PROFILE_TYPE: "${PROFILE_TYPE:-ad-hoc}"
+  APP_STORE_CONNECT_KEY_IDENTIFIER: "${APP_STORE_CONNECT_KEY_IDENTIFIER:-}"
+  APP_STORE_CONNECT_ISSUER_ID: "${APP_STORE_CONNECT_ISSUER_ID:-}"
+  APP_STORE_CONNECT_API_KEY_PATH: "${APP_STORE_CONNECT_API_KEY_PATH:-}"
+  APPLE_TEAM_ID: "${APPLE_TEAM_ID:-}"
+  APNS_KEY_ID: "${APNS_KEY_ID:-}"
+  IS_TESTFLIGHT: "${IS_TESTFLIGHT:-false}"
+  #ROFILE_URL: "${PROFILE_URL:-}"
+  #CERT_CER_URL: "${CERT_CER_URL:-}"
+  #CERT_KEY_URL: "${CERT_KEY_URL:-}"
+
+ios_signing_config_akash: &ios_signing_config_akash
+  APP_STORE_CONNECT_KEY_IDENTIFIER: "${APP_STORE_CONNECT_KEY_IDENTIFIER:-}"
+  APP_STORE_CONNECT_ISSUER_ID: "${APP_STORE_CONNECT_ISSUER_ID:-}"
+  #it is containing the path from remote server.
+  APP_STORE_CONNECT_API_KEY: "${APP_STORE_CONNECT_API_KEY:-}"
+  APP_STORE_CONNECT_API_KEY_PATH: "/tmp/AuthKey_${APP_STORE_CONNECT_KEY_IDENTIFIER}.p8"
+  APPLE_TEAM_ID: "${APPLE_TEAM_ID:-}"
+  BUNDLE_ID: "${BUNDLE_ID:-}"
+  PROFILE_TYPE: "${PROFILE_TYPE:-}"
+  CERT_P12_URL: "${CERT_P12_URL:-}"
+  #PROFILE_URL: "${PROFILE_URL:-}"
+  CERT_PASSWORD: "${CERT_PASSWORD:-}"
+  PROVISIONING_PROFILE: "${PROVISIONING_PROFILE:-}"
+  CERTIFICATE_PRIVATE_KEY: "${CERTIFICATE_PRIVATE_KEY:-}"
+
+# 📱 iOS Distribution Options Block
+ios_distribution_options: &ios_distribution_options
+  ENABLE_DEVICE_SPECIFIC_BUILDS: "${ENABLE_DEVICE_SPECIFIC_BUILDS:-false}"
+  INSTALL_URL: "${INSTALL_URL:-}"
+  DISPLAY_IMAGE_URL: "${DISPLAY_IMAGE_URL:-}"
+  FULL_SIZE_IMAGE_URL: "${FULL_SIZE_IMAGE_URL:-}"
+  THINNING: "${THINNING:-none}"
+
+# 🍎 iOS Development Options Block
+ios_development_options: &ios_development_options
+  ENABLE_DEBUG_BUILD: "${ENABLE_DEBUG_BUILD:-false}"
+  ENABLE_DEVICE_LOGGING: "${ENABLE_DEVICE_LOGGING:-false}"
+  ENABLE_DEBUG_SYMBOLS: "${ENABLE_DEBUG_SYMBOLS:-true}"
+
+# 🔧 Admin/Build Environment Variables Block
+admin_build_env: &admin_build_env
+  PROJECT_ROOT: "${PROJECT_ROOT:-$(pwd)}"
+  ANDROID_ROOT: "${ANDROID_ROOT:-android}"
+  ASSETS_DIR: "${ASSETS_DIR:-assets}"
+  OUTPUT_DIR: "${OUTPUT_DIR:-output}"
+  TEMP_DIR: "${TEMP_DIR:-temp}"
+  APP_ICON_PATH: "${APP_ICON_PATH:-assets/images/logo.png}"
+  SPLASH_IMAGE_PATH: "${SPLASH_IMAGE_PATH:-assets/images/splash.png}"
+  SPLASH_BG_PATH: "${SPLASH_BG_PATH:-assets/images/splash_bg.png}"
+  PUBSPEC_BACKUP_PATH: "${PUBSPEC_BACKUP_PATH:-pubspec.yaml.backup}"
+  GRADLE_WRAPPER_DIR: "${GRADLE_WRAPPER_DIR:-android/gradle/wrapper}"
+  GRADLE_WRAPPER_JAR_PATH: "${GRADLE_WRAPPER_JAR_PATH:-android/gradle/wrapper/gradle-wrapper.jar}"
+  GRADLE_WRAPPER_PROPERTIES_PATH: "${GRADLE_WRAPPER_PROPERTIES_PATH:-android/gradle/wrapper/gradle-wrapper.properties}"
+  GRADLE_WRAPPER_URL: "${GRADLE_WRAPPER_URL:-https://services.gradle.org/distributions/gradle-8.0-bin.zip}"
+  GRADLE_DISTRIBUTION_URL: "${GRADLE_DISTRIBUTION_URL:-https://services.gradle.org/distributions/gradle-8.0-bin.zip}"
+  DOWNLOAD_MAX_RETRIES: "${DOWNLOAD_MAX_RETRIES:-3}"
+  DOWNLOAD_RETRY_DELAY: "${DOWNLOAD_RETRY_DELAY:-5}"
+  ANDROID_KEYSTORE_BASE64: "${ANDROID_KEYSTORE_BASE64:-}"
+  FIREBASE_ENABLED: "${FIREBASE_ENABLED:-false}"
+
+workflows:
+  android-free:
+    name: Android Free Build
+    max_build_duration: 90
+    instance_type: mac_mini_m2
+    environment:
+      flutter: 3.32.2
+      java: 17
+      vars:
+        <<: [*common_vars, *app_config, *feature_flags, *permissions, *ui_config]
+        WORKFLOW_ID: "android-free"
+        PKG_NAME: $PKG_NAME
+        PUSH_NOTIFY: "false"
+        IS_DOMAIN_URL: "false"
+
+    scripts:
+      - name: Pre-build Setup
+        script: ./lib/scripts/android-free/pre-build.sh
+      - name: Build Android APK
+        script: ./lib/scripts/android-free/build.sh
+
+    artifacts:
+      - build/app/outputs/flutter-apk/app-release.apk
+      - output/android/app-release.apk
+      - build/app/outputs/mapping/release/mapping.txt
+      - build/app/outputs/logs/
+
+  android-paid:
+    name: Android Paid Build
+    max_build_duration: 90
+    instance_type: mac_mini_m2
+    environment:
+      flutter: 3.32.2
+      java: 17
+      vars:
+        <<: [*common_vars, *app_config, *feature_flags, *permissions, *ui_config]
+        WORKFLOW_ID: "android-paid"
+        PKG_NAME: $PKG_NAME
+        FIREBASE_CONFIG_ANDROID: $FIREBASE_CONFIG_ANDROID
+
+    scripts:
+      - name: Pre-build Setup
+        script: ./lib/scripts/android-paid/pre-build.sh
+      - name: Build Android APK
+        script: ./lib/scripts/android-paid/build.sh
+
+    artifacts:
+      - build/app/outputs/flutter-apk/app-release.apk
+      - output/android/app-release.apk
+      - build/app/outputs/mapping/release/mapping.txt
+      - build/app/outputs/logs/
+
+  android-publish:
+    name: Android Publish Build
+    max_build_duration: 120
+    instance_type: mac_mini_m2
+    environment:
+      flutter: 3.32.2
+      java: 17
+      vars:
+        <<: [*common_vars, *app_config, *feature_flags, *permissions, *ui_config]
+        MAX_RETRIES: "3"
+        WORKFLOW_ID: "android-publish"
+        PKG_NAME: $PKG_NAME
+        FIREBASE_CONFIG_ANDROID: $FIREBASE_CONFIG_ANDROID
+        KEY_STORE_URL: $KEY_STORE_URL
+        CM_KEYSTORE_PASSWORD: $CM_KEYSTORE_PASSWORD
+        CM_KEY_ALIAS: $CM_KEY_ALIAS
+        CM_KEY_PASSWORD: $CM_KEY_PASSWORD
+
+    scripts:
+      - name: Pre-build Setup
+        script: ./lib/scripts/android-publish/pre-build.sh
+      - name: Build Android APK and AAB
+        script: ./lib/scripts/android-publish/build.sh
+
+    artifacts:
+      - build/app/outputs/flutter-apk/app-release.apk
+      - build/app/outputs/bundle/release/app-release.aab
+      - output/android/app-release.apk
+      - output/android/app-release.aab
+      - build/app/outputs/mapping/release/mapping.txt
+      - build/app/outputs/logs/
+
+  ios-workflow:
+    name: iOS Universal Build - Following akash_build.sh method
+    max_build_duration: 90
+    instance_type: mac_mini_m2
+    environment:
+      flutter: 3.32.2
+      java: 17
+      xcode: 16.0
+      cocoapods: 1.16.2
+      vars:
+        <<: [*common_vars, *ios_build_acceleration, *app_config, *feature_flags, *permissions, *ui_config]
+        WORKFLOW_ID: "ios-workflow"
+        # App configuration
+        APP_NAME: $APP_NAME
+        APP_DISPLAY_NAME: $APP_DISPLAY_NAME
+        PKG_NAME: $PKG_NAME
+        BUNDLE_ID: $BUNDLE_ID
+        ORG_NAME: $ORG_NAME
+        WEB_URL: $WEB_URL
+        EMAIL_ID: $EMAIL_ID
+        VERSION_NAME: $VERSION_NAME
+        VERSION_CODE: $VERSION_CODE
+        USER_NAME: $USER_NAME
+        # Asset URLs
+        LOGO_URL: $LOGO_URL
+        SPLASH_URL: $SPLASH_URL
+        SPLASH_BG_URL: $SPLASH_BG_URL
+        SPLASH_BG_COLOR: $SPLASH_BG_COLOR
+        SPLASH_TAGLINE: $SPLASH_TAGLINE
+        SPLASH_TAGLINE_COLOR: $SPLASH_TAGLINE_COLOR
+        SPLASH_ANIMATION: $SPLASH_ANIMATION
+        SPLASH_DURATION: $SPLASH_DURATION
+        # Feature flags
+        IS_CHATBOT: $IS_CHATBOT
+        IS_SPLASH: $IS_SPLASH
+        IS_PULLDOWN: $IS_PULLDOWN
+        IS_BOTTOMMENU: $IS_BOTTOMMENU
+        IS_LOAD_IND: $IS_LOAD_IND
+        IS_CAMERA: $IS_CAMERA
+        IS_LOCATION: $IS_LOCATION
+        IS_MIC: $IS_MIC
+        IS_NOTIFICATION: $IS_NOTIFICATION
+        IS_CONTACT: $IS_CONTACT
+        IS_BIOMETRIC: $IS_BIOMETRIC
+        IS_CALENDAR: $IS_CALENDAR
+        IS_STORAGE: $IS_STORAGE
+        IS_DOMAIN_URL: $IS_DOMAIN_URL
+        PUSH_NOTIFY: $PUSH_NOTIFY
+        # Bottom menu configuration
+        BOTTOMMENU_ITEMS: $BOTTOMMENU_ITEMS
+        BOTTOMMENU_BG_COLOR: $BOTTOMMENU_BG_COLOR
+        BOTTOMMENU_ICON_COLOR: $BOTTOMMENU_ICON_COLOR
+        BOTTOMMENU_TEXT_COLOR: $BOTTOMMENU_TEXT_COLOR
+        BOTTOMMENU_FONT: $BOTTOMMENU_FONT
+        BOTTOMMENU_FONT_SIZE: $BOTTOMMENU_FONT_SIZE
+        BOTTOMMENU_FONT_BOLD: $BOTTOMMENU_FONT_BOLD
+        BOTTOMMENU_FONT_ITALIC: $BOTTOMMENU_FONT_ITALIC
+        BOTTOMMENU_ACTIVE_TAB_COLOR: $BOTTOMMENU_ACTIVE_TAB_COLOR
+        BOTTOMMENU_ICON_POSITION: $BOTTOMMENU_ICON_POSITION
+        BOTTOMMENU_VISIBLE_ON: $BOTTOMMENU_VISIBLE_ON
+        # Codesigning variables
+        PROFILE_TYPE: $PROFILE_TYPE
+        PROFILE_SPECIFIER_UUID: $PROFILE_SPECIFIER_UUID
+        PROFILE_URL: $PROFILE_URL
+        PROVISIONING_PROFILE: $PROVISIONING_PROFILE
+        CM_PROVISIONING_PROFILE: $CM_PROVISIONING_PROFILE
+        CERT_PASSWORD: $CERT_PASSWORD
+        CERT_P12_URL: $CERT_P12_URL
+        CERT_CER_URL: $CERT_CER_URL
+        CERT_KEY_URL: $CERT_KEY_URL
+        CERTIFICATE_PRIVATE_KEY: $CERTIFICATE_PRIVATE_KEY
+        CM_CERTIFICATE: $CM_CERTIFICATE
+        CM_CERTIFICATE_PASSWORD: $CM_CERTIFICATE_PASSWORD
+        CM_DISTRIBUTION_TYPE: $CM_DISTRIBUTION_TYPE
+        CODE_SIGNING_STYLE: $CODE_SIGNING_STYLE
+        CODE_SIGNING_STYLE_EXPORT: $CODE_SIGNING_STYLE_EXPORT
+        APPLE_TEAM_ID: $APPLE_TEAM_ID
+        # App Store Connect API credentials
+        APP_STORE_CONNECT_USERNAME: $APP_STORE_CONNECT_USERNAME
+        APP_STORE_CONNECT_KEY_IDENTIFIER: $APP_STORE_CONNECT_KEY_IDENTIFIER
+        APP_STORE_CONNECT_API_KEY: $APP_STORE_CONNECT_API_KEY
+        APP_STORE_CONNECT_API_KEY_PATH: $APP_STORE_CONNECT_API_KEY_PATH
+        APP_STORE_CONNECT_ISSUER_ID: $APP_STORE_CONNECT_ISSUER_ID
+        # APNS configuration
+        APNS_KEY_ID: $APNS_KEY_ID
+        APNS_AUTH_KEY_URL: $APNS_AUTH_KEY_URL
+        # Firebase configuration
+        FIREBASE_CONFIG_ANDROID: $FIREBASE_CONFIG_ANDROID
+        FIREBASE_CONFIG_IOS: $FIREBASE_CONFIG_IOS
+        # Email notifications
+        ENABLE_EMAIL_NOTIFICATIONS: $ENABLE_EMAIL_NOTIFICATIONS
+        EMAIL_SMTP_SERVER: $EMAIL_SMTP_SERVER
+        EMAIL_SMTP_PORT: $EMAIL_SMTP_PORT
+        EMAIL_SMTP_USER: $EMAIL_SMTP_USER
+        EMAIL_SMTP_PASS: $EMAIL_SMTP_PASS
+        # TestFlight
+        IS_TESTFLIGHT: $IS_TESTFLIGHT
+        # Build information
+        CM_BUILD_ID: $CM_BUILD_ID
+        CM_BUILD_DIR: $CM_BUILD_DIR
+        OUTPUT_DIR: "build/ios/output"
+
+    scripts:
+      - name: Set Script Permissions
+        script: |
+          echo "🔧 Setting script permissions..."
+          find lib/scripts -name "*.sh" -exec chmod +x {} \;
+          echo "✅ Script permissions set successfully"
+      - name: Pre-build Setup
+        script: ./lib/scripts/ios-workflow/pre-build.sh
+      - name: Build iOS app
+        script: ./lib/scripts/ios-workflow/build.sh
+      - name: Post-Build Validation
+        script: ./lib/scripts/ios-workflow/post-build.sh
+      - name: TestFlight Upload
+        script: ./lib/scripts/ios-workflow/testflight-upload.sh
+
+    artifacts:
+      # 📱 IPA Files (from akash_build.sh location)
+      - build/ios/output/*.ipa
+      - build/ios/archive/*.xcarchive
+      # 📋 Build Logs
+      - build/ios/logs/
+      - flutter_build.log
+      - xcodebuild_archive.log
+      - xcodebuild_export.log
+
+  ios-appstore:
+    name: iOS App Store Build (TestFlight)
+    max_build_duration: 90
+    instance_type: mac_mini_m2
+    environment:
+      flutter: 3.32.2
+      java: 17
+      xcode: 16.0
+      cocoapods: 1.16.2
+      vars:
+        <<: [*common_vars, *ios_build_acceleration, *app_config, *feature_flags, *permissions, *ui_config, *ios_signing_config]
+        WORKFLOW_ID: "ios-appstore"
+        BUNDLE_ID: $BUNDLE_ID
+        FIREBASE_CONFIG_IOS: $FIREBASE_CONFIG_IOS
+        PROFILE_TYPE: "app-store"
+        IS_TESTFLIGHT: "true"
+        ENABLE_EMAIL_NOTIFICATIONS: $ENABLE_EMAIL_NOTIFICATIONS
+        EMAIL_SMTP_SERVER: $EMAIL_SMTP_SERVER
+        EMAIL_SMTP_PORT: $EMAIL_SMTP_PORT
+        EMAIL_SMTP_USER: $EMAIL_SMTP_USER
+        EMAIL_SMTP_PASS: $EMAIL_SMTP_PASS
+        CM_BUILD_ID: $CM_BUILD_ID
+        CM_BUILD_DIR: $CM_BUILD_DIR
+        OUTPUT_DIR: "output/ios"
+    scripts:
+      - name: Pre-build Setup
+        script: ./lib/scripts/ios-appstore/pre-build.sh
+      - name: Build iOS app
+        script: ./lib/scripts/ios-appstore/build.sh
+      - name: Post-Build IPA Validation
+        script: ./lib/scripts/ios-appstore/post-build.sh
+      - name: Bundle Executable Fix
+        script: ./lib/scripts/ios-appstore/bundle-executable-fix.sh
+      - name: App Store Validation
+        script: ./lib/scripts/ios-appstore/app-store-validation.sh
+      - name: TestFlight Upload
+        script: ./lib/scripts/ios-appstore/testflight-upload.sh
+    artifacts:
+      # 📱 IPA Files (Primary artifacts)
+      - output/ios/*.ipa
+      - build/ios/ipa/*.ipa
+      - ios/build/*.ipa
+      - "*.ipa"
+
+      # 📦 Archive Files (When IPA export fails)
+      - output/ios/*.xcarchive
+      - build/ios/archive/*.xcarchive
+      - ios/build/*.xcarchive
+      - "*.xcarchive"
+
+      # 📋 Build Documentation
+      - output/ios/ARTIFACTS_SUMMARY.txt
+      - ios/ExportOptions.plist
+
+      # 📊 Build Logs
+      - build/ios/logs/
+      - output/ios/logs/
+
+      # 🔧 Additional Build Artifacts
+      - output/ios/
+      - build/ios/
+
+  ios-adhoc:
+    name: iOS Ad Hoc Build (TestFlight)
+    max_build_duration: 90
+    instance_type: mac_mini_m2
+    environment:
+      flutter: 3.32.2
+      java: 17
+      xcode: 16.0
+      cocoapods: 1.16.2
+      vars:
+        <<: [*common_vars, *ios_build_acceleration, *app_config, *feature_flags, *permissions, *ui_config, *ios_signing_config]
+        WORKFLOW_ID: "ios-adhoc"
+        BUNDLE_ID: $BUNDLE_ID
+        FIREBASE_CONFIG_IOS: $FIREBASE_CONFIG_IOS
+        PROFILE_TYPE: "ad-hoc"
+        IS_TESTFLIGHT: "false"
+        ENABLE_DEVICE_SPECIFIC_BUILDS: "${ENABLE_DEVICE_SPECIFIC_BUILDS:-false}"
+        INSTALL_URL: "${INSTALL_URL:-}"
+        DISPLAY_IMAGE_URL: "${DISPLAY_IMAGE_URL:-}"
+        FULL_SIZE_IMAGE_URL: "${FULL_SIZE_IMAGE_URL:-}"
+        THINNING: "${THINNING:-none}"
+        ENABLE_EMAIL_NOTIFICATIONS: $ENABLE_EMAIL_NOTIFICATIONS
+        EMAIL_SMTP_SERVER: $EMAIL_SMTP_SERVER
+        EMAIL_SMTP_PORT: $EMAIL_SMTP_PORT
+        EMAIL_SMTP_USER: $EMAIL_SMTP_USER
+        EMAIL_SMTP_PASS: $EMAIL_SMTP_PASS
+        CM_BUILD_ID: $CM_BUILD_ID
+        CM_BUILD_DIR: $CM_BUILD_DIR
+        OUTPUT_DIR: "output/ios"
+    scripts:
+      - name: Set Script Permissions
+        script: |
+          echo "🔧 Settingscript permissions..."
+          chmod +x lib/scripts/ios-adhoc/*.sh
+          chmod +x lib/scripts/utils/*.sh
+          echo "✅ Script permissions set successfully"
+      - name: Pre-build Setup
+        script: ./lib/scripts/ios-adhoc/pre-build.sh
+      - name: Build iOS app
+        script: ./lib/scripts/ios-adhoc/build.sh
+      - name: Post-Build IPA Validation
+        script: ./lib/scripts/ios-adhoc/post-build.sh
+    artifacts:
+      # 📱 IPA Files (Primary artifacts)
+      - output/ios/*.ipa
+      - build/ios/ipa/*.ipa
+      - ios/build/*.ipa
+      - "*.ipa"
+
+      # 📦 Archive Files (When IPA export fails)
+      - output/ios/*.xcarchive
+      - build/ios/archive/*.xcarchive
+      - ios/build/*.xcarchive
+      - "*.xcarchive"
+
+      # 📋 Build Documentation
+      - output/ios/ARTIFACTS_SUMMARY.txt
+      - ios/ExportOptions.plist
+
+      # 📊 Build Logs
+      - build/ios/logs/
+      - output/ios/logs/
+
+      # 🔧 Additional Build Artifacts
+      - output/ios/
+      - build/ios/
+
+  ios-akash:
+    name: iOS Script Generated by Akash
+    max_build_duration: 20
+    instance_type: mac_mini_m2
+    environment:
+      flutter: 3.32.2
+      java: 17
+      xcode: 16.0
+      cocoapods: 1.16.2
+      vars:
+        <<: [ *common_vars, *ios_build_acceleration, *app_config, *feature_flags, *permissions, *ui_config, *ios_signing_config_akash ]
+        WORKFLOW_ID: "ios-akash"
+        BUNDLE_ID: $BUNDLE_ID
+        FIREBASE_CONFIG_IOS: $FIREBASE_CONFIG_IOS
+        ENABLE_EMAIL_NOTIFICATIONS: $ENABLE_EMAIL_NOTIFICATIONS
+        EMAIL_SMTP_SERVER: $EMAIL_SMTP_SERVER
+        EMAIL_SMTP_PORT: $EMAIL_SMTP_PORT
+        EMAIL_SMTP_USER: $EMAIL_SMTP_USER
+        EMAIL_SMTP_PASS: $EMAIL_SMTP_PASS
+        CM_BUILD_ID: $CM_BUILD_ID
+        CM_BUILD_DIR: $CM_BUILD_DIR
+        OUTPUT_DIR: "output/ios"
+        # 🛡️ NEW WORKFLOW MODE: Setup and reporting only
+        NEW_WORKFLOW_MODE: "true"
+    scripts:
+      - name: Download API Key from Server
+        script: |
+          echo "⬇️ Downloading API key..."
+          curl -fSL "$APP_STORE_CONNECT_API_KEY" -o $APP_STORE_CONNECT_API_KEY_PATH
+          echo "✅ API key downloaded successfully"
+          # Debug: show file info and first few lines
+          ls -l $APP_STORE_CONNECT_API_KEY_PATH
+          cat $APP_STORE_CONNECT_API_KEY_PATH | head -5
+          
+          # Export the private key to the env file
+          echo "Exporting APP_STORE_CONNECT_PRIVATE_KEY to $CM_ENV..."
+          echo "export APP_STORE_CONNECT_PRIVATE_KEY=\"$(cat /tmp/AuthKey_${APP_STORE_CONNECT_KEY_IDENTIFIER}.p8 | sed 's/"/\\"/g')\"" >> "$CM_ENV"
+          
+          source "$CM_ENV"
+          echo "✅ APP_STORE_CONNECT_PRIVATE_KEY is set"
+          echo "DEBUG: APP_STORE_CONNECT_PRIVATE_KEY:"
+          echo "$APP_STORE_CONNECT_PRIVATE_KEY" | head -5
+          echo "$APP_STORE_CONNECT_PRIVATE_KEY" | tail -5
+      - name: Set Script Permissions
+        script: |
+          echo "🔧 Setting script permissions..."
+          chmod +x lib/scripts/ios-akash/*.sh
+          echo "✅ Script permissions set successfully"
+      - name: Validate Apple API Credentials
+        script: ./lib/scripts/ios-akash/appstore_validation.sh
+      - name: iOS Akash - Main Script
+        script: |
+          source "$CM_ENV"
+          ./lib/scripts/ios-akash/build.sh
+      - name: TestFlight Upload
+        script: |
+          source "$CM_ENV"
+          ./lib/scripts/ios-appstore/testflight-upload.sh
+    artifacts:
+      # 📦 Project Backup
+      - project_backup.zip
+      - signing_backup/*
+      # 📱 iOS IPA Files
+      - "**/*.ipa"
+  #  iOS Archive Files
+      - "**/*.xcarchive"
+  # 📋 Build Documentation
+      - output/ios/ARTIFACTS_SUMMARY.txt
+      - ios/ExportOptions.plist
+      - output/ios/ExportOptions.plist
+
+  # 📊 Build Logs
+      - build/app/outputs/logs/
+      - build/ios/logs/
+      - output/ios/logs/
+
+  # 🔧 Additional Outputs
+      - output/android/
+      - output/ios/
+      - build/ios/
+
+
+  ios-new-workflow:
+    name: iOS New Workflow - Setup & Bundle ID Report
+    max_build_duration: 60
+    instance_type: mac_mini_m2
+    environment:
+      flutter: 3.32.2
+      java: 17
+      xcode: 16.0
+      cocoapods: 1.16.2
+      vars:
+        <<: [*common_vars, *ios_build_acceleration, *app_config, *feature_flags, *permissions, *ui_config, *ios_signing_config, *ios_distribution_options]
+        WORKFLOW_ID: "ios-new-workflow"
+        BUNDLE_ID: $BUNDLE_ID
+        FIREBASE_CONFIG_IOS: $FIREBASE_CONFIG_IOS
+        ENABLE_EMAIL_NOTIFICATIONS: $ENABLE_EMAIL_NOTIFICATIONS
+        EMAIL_SMTP_SERVER: $EMAIL_SMTP_SERVER
+        EMAIL_SMTP_PORT: $EMAIL_SMTP_PORT
+        EMAIL_SMTP_USER: $EMAIL_SMTP_USER
+        EMAIL_SMTP_PASS: $EMAIL_SMTP_PASS
+        CM_BUILD_ID: $CM_BUILD_ID
+        CM_BUILD_DIR: $CM_BUILD_DIR
+        OUTPUT_DIR: "output/ios"
+        # 🛡️ NEW WORKFLOW MODE: Setup and reporting only
+        NEW_WORKFLOW_MODE: "true"
+
+    scripts:
+      - name: Set Script Permissions
+        script: |
+          echo "🔧 Setting script permissions..."
+          chmod +x lib/scripts/ios-new-workflow/*.sh
+          chmod +x lib/scripts/utils/*.sh
+          chmod +x lib/scripts/ios/*.sh
+          echo "✅ Script permissions set successfully"
+      - name: iOS New Workflow - Main Script
+        script: |
+          # Ensure script is executable
+          chmod +x ./lib/scripts/ios-new-workflow/main.sh
+          
+          # Run the main script
+          ./lib/scripts/ios-new-workflow/main.sh
+
+    artifacts:
+      # 📋 Bundle ID Report
+      - output/ios/BUNDLE_IDENTIFIERS_REPORT.txt
+      
+      # 📊 Build Logs
+      - output/ios/logs/
+      
+      # 🎨 Branding Assets
+      - assets/images/
+      
+      # 📋 Environment Variables Report
+      - output/ios/ENVIRONMENT_VARIABLES_REPORT.txt
+
+  combined:
+    name: Universal Combined Build (Android + iOS)
+    max_build_duration: 120
+    instance_type: mac_mini_m2
+    environment:
+      flutter: 3.32.2
+      java: 17
+      xcode: 16.0
+      cocoapods: 1.16.2
+      vars:
+        <<: [*common_vars, *ios_build_acceleration, *app_config, *feature_flags, *permissions, *ui_config, *ios_signing_config, *ios_distribution_options, *admin_build_env]
+        MAX_RETRIES: "3"
+        WORKFLOW_ID: "combined"
+        PKG_NAME: $PKG_NAME
+        BUNDLE_ID: $BUNDLE_ID
+        FIREBASE_CONFIG_ANDROID: $FIREBASE_CONFIG_ANDROID
+        FIREBASE_CONFIG_IOS: $FIREBASE_CONFIG_IOS
+        KEY_STORE_URL: $KEY_STORE_URL
+        CM_KEYSTORE_PASSWORD: $CM_KEYSTORE_PASSWORD
+        CM_KEY_ALIAS: $CM_KEY_ALIAS
+        CM_KEY_PASSWORD: $CM_KEY_PASSWORD
+        ENABLE_EMAIL_NOTIFICATIONS: $ENABLE_EMAIL_NOTIFICATIONS
+        EMAIL_SMTP_SERVER: $EMAIL_SMTP_SERVER
+        EMAIL_SMTP_PORT: $EMAIL_SMTP_PORT
+        EMAIL_SMTP_USER: $EMAIL_SMTP_USER
+        EMAIL_SMTP_PASS: $EMAIL_SMTP_PASS
+
+    scripts:
+      - name: Pre-build Setup
+        script: ./lib/scripts/combined/pre-build.sh
+      - name: Universal Combined Build
+        script: ./lib/scripts/combined/build.sh
+
+    artifacts:
+      # 📱 Android Artifacts
+      - build/app/outputs/flutter-apk/app-release.apk
+      - build/app/outputs/bundle/release/app-release.aab
+      - output/android/app-release.apk
+      - output/android/app-release.aab
+      - build/app/outputs/mapping/release/mapping.txt
+
+      # 📱 iOS IPA Files (Primary artifacts)
+      - output/ios/*.ipa
+      - build/ios/ipa/*.ipa
+      - ios/build/*.ipa
+      - "*.ipa"
+
+      # 📦 iOS Archive Files (When IPA export fails)
+      - output/ios/*.xcarchive
+      - build/ios/archive/*.xcarchive
+      - ios/build/*.xcarchive
+      - "*.xcarchive"
+
+      # 📋 Build Documentation
+      - output/ios/ARTIFACTS_SUMMARY.txt
+      - ios/ExportOptions.plist
+
+      # 📊 Build Logs
+      - build/app/outputs/logs/
+      - build/ios/logs/
+      - output/ios/logs/
+
+      # 🔧 Additional Build Artifacts
+      - output/android/
+      - output/ios/
+      - build/ios/
