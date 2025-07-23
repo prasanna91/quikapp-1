@@ -346,26 +346,51 @@ zip -r project_backup.zip . -x "build/*" ".dart_tool/*" ".git/*" "output/*"
 
 # Build Flutter app
 log_info "📱 Building Flutter iOS app in release mode..."
-flutter build ios --release --no-codesign \
+
+# Create build log file
+BUILD_LOG="flutter_build_$(date +%Y%m%d_%H%M%S).log"
+
+# Run Flutter build with full output (no grep filtering)
+if flutter build ios --release --no-codesign \
   --build-name="${VERSION_NAME:-1.0.0}" \
   --build-number="${VERSION_CODE:-1}" \
-  2>&1 | tee flutter_build.log | grep -E "(Building|Error|FAILURE|warning|Warning|error|Exception|\.dart)"
+  2>&1 | tee "$BUILD_LOG"; then
+  log_success "✅ Flutter build completed successfully"
+else
+  log_error "❌ Flutter build failed"
+  log_error "📋 Build log saved to: $BUILD_LOG"
+  log_error "📋 Last 50 lines of build log:"
+  tail -50 "$BUILD_LOG"
+  exit 1
+fi
 
 # Archive app with Xcode
 log_info "📦 Archiving app with Xcode..."
 mkdir -p build/ios/archive
 
+# Create archive log file
+ARCHIVE_LOG="xcodebuild_archive_$(date +%Y%m%d_%H%M%S).log"
+
 echo "Current directory: $(pwd)"
 ls -l ios/Runner.xcworkspace
 
-xcodebuild -workspace ios/Runner.xcworkspace \
+# Run Xcode archive with full output (no grep filtering)
+if xcodebuild -workspace ios/Runner.xcworkspace \
   -scheme Runner \
   -configuration Release \
   -archivePath build/ios/archive/Runner.xcarchive \
   -destination 'generic/platform=iOS' \
   archive \
   DEVELOPMENT_TEAM="${APPLE_TEAM_ID:-}" \
-  2>&1 | tee xcodebuild_archive.log | grep -E "(error:|warning:|Check dependencies|Provisioning|CodeSign|FAILED|Succeeded)"
+  2>&1 | tee "$ARCHIVE_LOG"; then
+  log_success "✅ Xcode archive completed successfully"
+else
+  log_error "❌ Xcode archive failed"
+  log_error "📋 Archive log saved to: $ARCHIVE_LOG"
+  log_error "📋 Last 50 lines of archive log:"
+  tail -50 "$ARCHIVE_LOG"
+  exit 1
+fi
 
 # Create ExportOptions.plist
 log_info "🛠️ Writing ExportOptions.plist..."
