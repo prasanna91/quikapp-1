@@ -224,11 +224,22 @@ if [ -f "../lib/scripts/ios/cocoapods_integration_fix.sh" ]; then
   fi
 fi
 
+# Run comprehensive iOS fix first
+log_info "🔧 Running comprehensive iOS fix..."
+if [ -f "lib/scripts/ios/comprehensive_ios_fix.sh" ]; then
+  chmod +x lib/scripts/ios/comprehensive_ios_fix.sh
+  if ./lib/scripts/ios/comprehensive_ios_fix.sh; then
+    log_success "✅ Comprehensive iOS fix completed"
+  else
+    log_warn "⚠️ Comprehensive iOS fix had issues, continuing..."
+  fi
+fi
+
 # Run Firebase version conflict resolution if available
-if [ -f "../lib/scripts/ios/fix_firebase_version_conflict.sh" ]; then
+if [ -f "lib/scripts/ios/fix_firebase_version_conflict.sh" ]; then
   log_info "🔥 Running Firebase version conflict resolution..."
-  chmod +x ../lib/scripts/ios/fix_firebase_version_conflict.sh
-  if ../lib/scripts/ios/fix_firebase_version_conflict.sh; then
+  chmod +x lib/scripts/ios/fix_firebase_version_conflict.sh
+  if ./lib/scripts/ios/fix_firebase_version_conflict.sh; then
     log_success "✅ Firebase version conflict resolution completed"
   else
     log_warn "⚠️ Firebase version conflict resolution had issues, continuing..."
@@ -236,13 +247,25 @@ if [ -f "../lib/scripts/ios/fix_firebase_version_conflict.sh" ]; then
 fi
 
 # Update Firebase versions if needed
-if [ -f "../lib/scripts/ios/update_firebase_versions.sh" ]; then
+if [ -f "lib/scripts/ios/update_firebase_versions.sh" ]; then
   log_info "📦 Checking and updating Firebase versions..."
-  chmod +x ../lib/scripts/ios/update_firebase_versions.sh
-  if ../lib/scripts/ios/update_firebase_versions.sh; then
+  chmod +x lib/scripts/ios/update_firebase_versions.sh
+  if ./lib/scripts/ios/update_firebase_versions.sh; then
     log_success "✅ Firebase versions updated"
   else
     log_warn "⚠️ Firebase version update had issues, continuing..."
+  fi
+fi
+
+# Fix Flutter generated files if needed (CRITICAL)
+if [ -f "lib/scripts/ios/fix_flutter_generated_files.sh" ]; then
+  log_info "📦 Checking and fixing Flutter generated files..."
+  chmod +x lib/scripts/ios/fix_flutter_generated_files.sh
+  if ./lib/scripts/ios/fix_flutter_generated_files.sh; then
+    log_success "✅ Flutter generated files fixed"
+  else
+    log_error "❌ Flutter generated files fix failed"
+    exit 1
   fi
 fi
 

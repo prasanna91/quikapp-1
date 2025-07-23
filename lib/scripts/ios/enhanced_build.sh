@@ -72,6 +72,26 @@ check_ios_setup() {
     exit 1
   fi
   
+  # Check for Flutter generated files (CRITICAL)
+  if [ ! -f "ios/Flutter/Generated.xcconfig" ]; then
+    log_error "❌ ios/Flutter/Generated.xcconfig not found"
+    log_info "📋 This file is required by the Podfile"
+    log_info "📋 Running Flutter generated files fix..."
+    
+    if [ -f "lib/scripts/ios/fix_flutter_generated_files.sh" ]; then
+      chmod +x lib/scripts/ios/fix_flutter_generated_files.sh
+      if ./lib/scripts/ios/fix_flutter_generated_files.sh; then
+        log_success "✅ Flutter generated files fixed"
+      else
+        log_error "❌ Failed to fix Flutter generated files"
+        exit 1
+      fi
+    else
+      log_error "❌ Flutter generated files fix script not found"
+      exit 1
+    fi
+  fi
+  
   log_success "✅ iOS project setup verified"
 }
 

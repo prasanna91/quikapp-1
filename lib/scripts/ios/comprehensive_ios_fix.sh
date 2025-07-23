@@ -12,6 +12,20 @@ log_warn()    { echo "⚠️ $1"; }
 
 echo "🔧 Running Comprehensive iOS Build Fix..."
 
+# Step 0: Fix Flutter generated files (NEW - CRITICAL)
+log_info "📦 Step 0: Fixing Flutter generated files..."
+if [ -f "lib/scripts/ios/fix_flutter_generated_files.sh" ]; then
+  chmod +x lib/scripts/ios/fix_flutter_generated_files.sh
+  if ./lib/scripts/ios/fix_flutter_generated_files.sh; then
+    log_success "✅ Flutter generated files fixed"
+  else
+    log_error "❌ Flutter generated files fix failed"
+    exit 1
+  fi
+else
+  log_warn "⚠️ Flutter generated files fix script not found"
+fi
+
 # Step 1: Update Firebase versions
 log_info "📦 Step 1: Updating Firebase versions..."
 if [ -f "lib/scripts/ios/update_firebase_versions.sh" ]; then

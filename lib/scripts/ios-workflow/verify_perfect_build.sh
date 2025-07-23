@@ -27,6 +27,8 @@ check_required_scripts() {
     "lib/scripts/ios/fix_firebase_version_conflict.sh"
     "lib/scripts/ios/update_firebase_versions.sh"
     "lib/scripts/ios/fix_podfile_deployment_target.sh"
+    "lib/scripts/ios/fix_flutter_generated_files.sh"
+    "lib/scripts/ios/quick_flutter_fix.sh"
     "lib/scripts/utils/send_email.sh"
   )
   
@@ -65,6 +67,8 @@ check_script_permissions() {
     "lib/scripts/ios/fix_firebase_version_conflict.sh"
     "lib/scripts/ios/update_firebase_versions.sh"
     "lib/scripts/ios/fix_podfile_deployment_target.sh"
+    "lib/scripts/ios/fix_flutter_generated_files.sh"
+    "lib/scripts/ios/quick_flutter_fix.sh"
     "lib/scripts/utils/send_email.sh"
   )
   
