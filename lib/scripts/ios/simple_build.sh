@@ -198,6 +198,96 @@ fi
 # Skip CocoaPods since it's already handled in pre-build
 log_info "📦 Skipping CocoaPods (already handled in pre-build)..."
 
+# Fix CocoaPods repository and reinstall if needed
+log_info "📦 Ensuring CocoaPods repository is up to date..."
+
+# Check if CocoaPods is available
+if ! command -v pod &>/dev/null; then
+  log_error "❌ CocoaPods is not installed or not in PATH"
+  log_info "📦 Installing CocoaPods..."
+  sudo gem install cocoapods || {
+    log_error "❌ Failed to install CocoaPods"
+    exit 1
+  }
+fi
+
+cd ios
+
+# Run comprehensive CocoaPods integration fix if available
+if [ -f "../lib/scripts/ios/cocoapods_integration_fix.sh" ]; then
+  log_info "🔧 Running comprehensive CocoaPods integration fix..."
+  chmod +x ../lib/scripts/ios/cocoapods_integration_fix.sh
+  if ../lib/scripts/ios/cocoapods_integration_fix.sh; then
+    log_success "✅ CocoaPods integration fix completed"
+  else
+    log_warn "⚠️ CocoaPods integration fix had issues, continuing with manual approach..."
+  fi
+fi
+
+# Update CocoaPods repository
+log_info "🔄 Updating CocoaPods repository..."
+if pod repo update --silent; then
+  log_success "✅ CocoaPods repository updated"
+else
+  log_warn "⚠️ CocoaPods repository update failed, continuing..."
+fi
+
+# Check if Podfile.lock exists and is recent
+if [ -f "Podfile.lock" ]; then
+  log_info "📋 Podfile.lock exists, checking if reinstall is needed..."
+  
+  # Try to install with repo update
+  if pod install --repo-update --clean-install; then
+    log_success "✅ CocoaPods installed successfully with repo update"
+  else
+    log_warn "⚠️ CocoaPods install with repo update failed, trying alternative approach..."
+    
+    # Clear CocoaPods cache and try again
+    pod cache clean --all || true
+    
+    if pod install --repo-update --clean-install --legacy; then
+      log_success "✅ CocoaPods installed successfully with legacy mode"
+    else
+      log_error "❌ CocoaPods installation failed completely"
+      cd ..
+      exit 1
+    fi
+  fi
+else
+  log_info "📋 No Podfile.lock found, performing fresh installation..."
+  
+  if pod install --repo-update --clean-install; then
+    log_success "✅ CocoaPods installed successfully"
+  else
+    log_error "❌ CocoaPods installation failed"
+    cd ..
+    exit 1
+  fi
+fi
+
+# Additional cleanup and reinstall if still having issues
+if [ ! -d "Pods" ] || [ ! -f "Podfile.lock" ]; then
+  log_warn "⚠️ Pods directory or Podfile.lock missing, performing complete reinstall..."
+  
+  # Remove existing Pods and lock file
+  rm -rf Pods Podfile.lock
+  
+  # Clear all CocoaPods caches
+  pod cache clean --all || true
+  pod deintegrate || true
+  
+  # Fresh install
+  if pod install --repo-update --clean-install; then
+    log_success "✅ Complete CocoaPods reinstall successful"
+  else
+    log_error "❌ Complete CocoaPods reinstall failed"
+    cd ..
+    exit 1
+  fi
+fi
+
+cd ..
+
 # Update release.xcconfig with dynamic signing values
 XC_CONFIG_PATH="ios/Flutter/release.xcconfig"
 echo "🔧 Updating release.xcconfig with dynamic signing values..."
