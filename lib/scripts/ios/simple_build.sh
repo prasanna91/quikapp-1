@@ -224,6 +224,28 @@ if [ -f "../lib/scripts/ios/cocoapods_integration_fix.sh" ]; then
   fi
 fi
 
+# Run Firebase version conflict resolution if available
+if [ -f "../lib/scripts/ios/fix_firebase_version_conflict.sh" ]; then
+  log_info "🔥 Running Firebase version conflict resolution..."
+  chmod +x ../lib/scripts/ios/fix_firebase_version_conflict.sh
+  if ../lib/scripts/ios/fix_firebase_version_conflict.sh; then
+    log_success "✅ Firebase version conflict resolution completed"
+  else
+    log_warn "⚠️ Firebase version conflict resolution had issues, continuing..."
+  fi
+fi
+
+# Update Firebase versions if needed
+if [ -f "../lib/scripts/ios/update_firebase_versions.sh" ]; then
+  log_info "📦 Checking and updating Firebase versions..."
+  chmod +x ../lib/scripts/ios/update_firebase_versions.sh
+  if ../lib/scripts/ios/update_firebase_versions.sh; then
+    log_success "✅ Firebase versions updated"
+  else
+    log_warn "⚠️ Firebase version update had issues, continuing..."
+  fi
+fi
+
 # Update CocoaPods repository
 log_info "🔄 Updating CocoaPods repository..."
 if pod repo update --silent; then
@@ -236,6 +258,14 @@ fi
 if [ -f "Podfile.lock" ]; then
   log_info "📋 Podfile.lock exists, checking if reinstall is needed..."
   
+  # Check for Firebase version conflicts
+  if grep -q "Firebase/Messaging.*11.15.0" "Podfile.lock"; then
+    log_warn "⚠️ Firebase version conflict detected in Podfile.lock"
+    log_info "🗑️ Removing Podfile.lock to resolve Firebase version conflicts..."
+    rm -f Podfile.lock
+    rm -rf Pods
+  fi
+  
   # Try to install with repo update
   if pod install --repo-update --clean-install; then
     log_success "✅ CocoaPods installed successfully with repo update"
@@ -245,8 +275,8 @@ if [ -f "Podfile.lock" ]; then
     # Clear CocoaPods cache and try again
     pod cache clean --all || true
     
-    if pod install --repo-update --clean-install --legacy; then
-      log_success "✅ CocoaPods installed successfully with legacy mode"
+    if pod install --repo-update --clean-install; then
+      log_success "✅ CocoaPods installed successfully with cache cleanup"
     else
       log_error "❌ CocoaPods installation failed completely"
       cd ..

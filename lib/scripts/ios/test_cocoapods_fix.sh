@@ -33,10 +33,13 @@ log_info "📦 Test 2: Testing pod install..."
 if pod install --repo-update --clean-install; then
   log_success "✅ Pod install successful"
 else
-  log_warn "⚠️ Pod install failed, trying legacy mode..."
+  log_warn "⚠️ Pod install failed, trying with cache cleanup..."
   
-  if pod install --repo-update --clean-install --legacy; then
-    log_success "✅ Pod install successful with legacy mode"
+  # Clear cache and try again
+  pod cache clean --all || true
+  
+  if pod install --repo-update --clean-install; then
+    log_success "✅ Pod install successful with cache cleanup"
   else
     log_error "❌ Pod install failed completely"
     cd ..
