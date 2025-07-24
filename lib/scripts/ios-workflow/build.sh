@@ -1,117 +1,137 @@
 #!/bin/bash
 
-# iOS Workflow Build Script - Enhanced Version with Better Error Handling
-# Uses enhanced build script with detailed error information
+# iOS Workflow Build Script
+# Simple and direct build process
 
 set -euo pipefail
+trap 'echo "❌ Error occurred at line $LINENO. Exit code: $?" >&2; exit 1' ERR
 
 log_info()    { echo "ℹ️ $1"; }
 log_success() { echo "✅ $1"; }
 log_error()   { echo "❌ $1"; }
 log_warn()    { echo "⚠️ $1"; }
-log()         { echo "📌 $1"; }
 
-echo "🏗️ Starting Enhanced iOS Workflow Build..."
+echo "🚀 Starting iOS Workflow Build..."
 
-# Make scripts executable
-chmod +x lib/scripts/ios/*.sh
-chmod +x lib/scripts/utils/*.sh
-
-# Run comprehensive iOS fix first
-log_info "🔧 Running comprehensive iOS fix..."
-if [ -f "lib/scripts/ios/comprehensive_ios_fix.sh" ]; then
-  chmod +x lib/scripts/ios/comprehensive_ios_fix.sh
-  if ./lib/scripts/ios/comprehensive_ios_fix.sh; then
-    log_success "✅ Comprehensive iOS fix completed"
-  else
-    log_warn "⚠️ Comprehensive iOS fix had issues, continuing with build..."
-  fi
+# Check if Runner.xcworkspace exists
+if [ ! -d "ios/Runner.xcworkspace" ]; then
+  log_error "❌ Runner.xcworkspace not found"
+  log_info "📋 Creating iOS project..."
+  flutter create --platforms=ios .
 fi
 
-# Run diagnostics if build fails
-run_diagnostics() {
-  log_info "🔍 Running build diagnostics..."
-  if [ -f "lib/scripts/ios/diagnose_build_issues.sh" ]; then
-    chmod +x lib/scripts/ios/diagnose_build_issues.sh
-    ./lib/scripts/ios/diagnose_build_issues.sh
-  fi
-}
+# Check if Flutter generated files exist
+if [ ! -f "ios/Flutter/Generated.xcconfig" ]; then
+  log_error "❌ ios/Flutter/Generated.xcconfig not found"
+  log_info "📋 Running flutter pub get..."
+  flutter pub get
+fi
 
-# Enhanced build process
-log_info "📱 Building iOS app with enhanced error handling..."
+# Build Flutter app
+log_info "📱 Building Flutter iOS app in release mode..."
+flutter build ios --release --no-codesign \
+  --build-name="$VERSION_NAME" \
+  --build-number="$VERSION_CODE" \
+  2>&1 | tee flutter_build.log | grep -E "(Building|Error|FAILURE|warning|Warning|error|Exception|\.dart)"
 
-# Try enhanced build script first
-if [ -f "lib/scripts/ios/enhanced_build.sh" ]; then
-  chmod +x lib/scripts/ios/enhanced_build.sh
-  if ./lib/scripts/ios/enhanced_build.sh; then
-    log_success "✅ Enhanced build completed successfully!"
-    
-    # Send success email notification
-    if [ "${ENABLE_EMAIL_NOTIFICATIONS:-false}" = "true" ]; then
-      log_info "📧 Sending build success notification..."
-      if [ -f "lib/scripts/utils/send_email.sh" ]; then
-        chmod +x lib/scripts/utils/send_email.sh
-        ./lib/scripts/utils/send_email.sh \
-          "build_success" \
-          "ios" \
-          "${CM_BUILD_ID:-unknown}"
-      fi
-    fi
-  else
-    log_error "❌ Enhanced build failed"
-    run_diagnostics
-    
-    # Send failure email notification
-    if [ "${ENABLE_EMAIL_NOTIFICATIONS:-false}" = "true" ]; then
-      log_info "📧 Sending build failure notification..."
-      if [ -f "lib/scripts/utils/send_email.sh" ]; then
-        chmod +x lib/scripts/utils/send_email.sh
-        ./lib/scripts/utils/send_email.sh \
-          "build_failed" \
-          "ios" \
-          "${CM_BUILD_ID:-unknown}" \
-          "Build failed during iOS app compilation or IPA export process"
-      fi
-    fi
-    
-    exit 1
+# Archive app with Xcode
+log_info "📦 Archiving app with Xcode..."
+mkdir -p build/ios/archive
+
+echo "Current directory: $(pwd)"
+ls -l ios/Runner.xcworkspace
+
+xcodebuild -workspace ios/Runner.xcworkspace \
+  -scheme Runner \
+  -configuration Release \
+  -archivePath build/ios/archive/Runner.xcarchive \
+  -destination 'generic/platform=iOS' \
+  archive \
+  DEVELOPMENT_TEAM="$APPLE_TEAM_ID" \
+  2>&1 | tee xcodebuild_archive.log | grep -E "(error:|warning:|Check dependencies|Provisioning|CodeSign|FAILED|Succeeded)"
+
+# Create ExportOptions.plist
+log_info "🛠️ Writing ExportOptions.plist..."
+cat > ios/ExportOptions.plist << EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>destination</key>
+	<string>export</string>
+	<key>generateAppStoreInformation</key>
+  	<false/>
+  <key>manageAppVersionAndBuildNumber</key>
+    <true/>
+  <key>method</key>
+  <string>app-store-connect</string>
+  <key>provisioningProfiles</key>
+      <dict>
+        <key>$BUNDLE_ID</key>
+        <string>$UUID</string>
+      </dict>
+  <key>signingCertificate</key>
+  	<string>$CM_DISTRIBUTION_TYPE</string>
+  <key>signingStyle</key>
+    <string>$CODE_SIGNING_STYLE</string>
+  <key>teamID</key>
+    <string>$APPLE_TEAM_ID</string>
+  <key>stripSwiftSymbols</key>
+  	<true/>
+  <key>testFlightInternalTestingOnly</key>
+  	<false/>
+    <key>uploadSymbols</key>
+    <true/>
+  <key>compileBitcode</key>
+  <false/>
+  <key>uploadBitcode</key>
+      <false/>
+</dict>
+</plist>
+EOF
+
+# Export IPA
+log_info "📤 Exporting IPA..."
+xcodebuild -exportArchive \
+  -archivePath build/ios/archive/Runner.xcarchive \
+  -exportPath build/ios/output \
+  -exportOptionsPlist ios/ExportOptions.plist
+
+# Find and upload IPA
+IPA_PATH=$(find build/ios/output -name "*.ipa" | head -n 1)
+if [ -z "$IPA_PATH" ]; then
+  log_error "❌ IPA file not found in build/ios/output. Searching entire directory..."
+  IPA_PATH=$(find . -name "*.ipa" | head -n 1)
+fi
+
+if [ -z "$IPA_PATH" ]; then
+  log_error "❌ IPA file not found. Build failed."
+  exit 1
+fi
+
+log_success "✅ IPA found at: $IPA_PATH"
+
+# Upload to App Store Connect if credentials are available
+if [ ! -z "${APP_STORE_CONNECT_KEY_IDENTIFIER:-}" ] && [ ! -z "${APP_STORE_CONNECT_ISSUER_ID:-}" ]; then
+  log_info "📤 Uploading to App Store Connect..."
+  
+  # Download API key if URL is provided
+  if [ ! -z "${APP_STORE_CONNECT_API_KEY_PATH:-}" ]; then
+    APP_STORE_CONNECT_API_KEY_PATH_New="$HOME/private_keys/AuthKey_${APP_STORE_CONNECT_KEY_IDENTIFIER}.p8"
+    mkdir -p "$(dirname "$APP_STORE_CONNECT_API_KEY_PATH_New")"
+    curl -fSL "$APP_STORE_CONNECT_API_KEY_PATH" -o "$APP_STORE_CONNECT_API_KEY_PATH_New"
+    log_success "✅ API key downloaded to $APP_STORE_CONNECT_API_KEY_PATH_New"
   fi
+  
+  xcrun altool --upload-app \
+    -f "$IPA_PATH" \
+    -t ios \
+    --apiKey "$APP_STORE_CONNECT_KEY_IDENTIFIER" \
+    --apiIssuer "$APP_STORE_CONNECT_ISSUER_ID"
+  
+  log_success "✅ Upload to App Store Connect completed"
 else
-  # Fallback to simple build script
-  log_warn "⚠️ Enhanced build script not found, using simple build..."
-  if ./lib/scripts/ios/simple_build.sh; then
-    log_success "✅ Simple build completed successfully!"
-    
-    # Send success email notification
-    if [ "${ENABLE_EMAIL_NOTIFICATIONS:-false}" = "true" ]; then
-      log_info "📧 Sending build success notification..."
-      if [ -f "lib/scripts/utils/send_email.sh" ]; then
-        chmod +x lib/scripts/utils/send_email.sh
-        ./lib/scripts/utils/send_email.sh \
-          "build_success" \
-          "ios" \
-          "${CM_BUILD_ID:-unknown}"
-      fi
-    fi
-  else
-    log_error "❌ Simple build failed"
-    run_diagnostics
-    
-    # Send failure email notification
-    if [ "${ENABLE_EMAIL_NOTIFICATIONS:-false}" = "true" ]; then
-      log_info "📧 Sending build failure notification..."
-      if [ -f "lib/scripts/utils/send_email.sh" ]; then
-        chmod +x lib/scripts/utils/send_email.sh
-        ./lib/scripts/utils/send_email.sh \
-          "build_failed" \
-          "ios" \
-          "${CM_BUILD_ID:-unknown}" \
-          "Build failed during iOS app compilation or IPA export process"
-      fi
-    fi
-    
-    exit 1
-  fi
+  log_warn "⚠️ App Store Connect credentials not provided, skipping upload"
 fi
 
-log_success "✅ Enhanced iOS Workflow Build completed" 
+log_success "🎉 iOS build process completed successfully!" 
