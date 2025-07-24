@@ -13,6 +13,17 @@ log_warn()    { echo "⚠️ $1"; }
 
 echo "🚀 Starting iOS Workflow Build..."
 
+# Fix preprocessor directive issue if it exists
+log_info "🔧 Checking for preprocessor directive issues..."
+if [ -f "lib/scripts/ios/fix_preprocessor_directive.sh" ]; then
+  chmod +x lib/scripts/ios/fix_preprocessor_directive.sh
+  if ./lib/scripts/ios/fix_preprocessor_directive.sh; then
+    log_success "✅ Preprocessor directive fix completed"
+  else
+    log_warn "⚠️ Preprocessor directive fix had issues, continuing..."
+  fi
+fi
+
 # Check if Runner.xcworkspace exists
 if [ ! -d "ios/Runner.xcworkspace" ]; then
   log_error "❌ Runner.xcworkspace not found"
