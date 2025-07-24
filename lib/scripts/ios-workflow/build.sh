@@ -35,6 +35,21 @@ if [ -f "lib/scripts/ios/fix_missing_files.sh" ]; then
   fi
 fi
 
+# Setup environment variables
+log_info "🔧 Setting up environment variables..."
+if [ -f "lib/scripts/ios/setup_environment_variables.sh" ]; then
+  chmod +x lib/scripts/ios/setup_environment_variables.sh
+  if ./lib/scripts/ios/setup_environment_variables.sh; then
+    log_success "✅ Environment variables setup completed"
+  else
+    log_error "❌ Environment variables setup failed"
+    exit 1
+  fi
+else
+  log_error "❌ Environment variables setup script not found"
+  exit 1
+fi
+
 # Check if Runner.xcworkspace exists
 if [ ! -d "ios/Runner.xcworkspace" ]; then
   log_error "❌ Runner.xcworkspace not found"
