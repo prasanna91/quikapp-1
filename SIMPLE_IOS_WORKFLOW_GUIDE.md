@@ -2,236 +2,292 @@
 
 ## Overview
 
-The iOS workflow has been completely rewritten to be simple, direct, and reliable - following the pattern from `akash_build.sh`. The complex multi-layered scripts have been replaced with straightforward, single-purpose scripts.
+The `simple_ios_build.sh` script is a comprehensive, single-file iOS build workflow that combines the best practices from `akash_build.sh` with current environment variables and Dart-specific requirements.
 
-## Key Changes
+## 🚀 Key Features
 
-### ❌ **Removed Complex Components**
-- Multiple fix scripts with complex dependencies
-- Over-engineered error handling
-- Complex script orchestration
-- Multiple fallback mechanisms
-- Email notification system
-- Diagnostic scripts
+### Single Script Solution
+- **Complete workflow** in one file
+- **No complex orchestration** between multiple scripts
+- **Self-contained** with all necessary steps
+- **Easy to maintain** and debug
 
-### ✅ **New Simple Components**
-- **`pre-build.sh`** - Direct pre-build setup
-- **`build.sh`** - Simple build process
-- **`post-build.sh`** - Basic post-build cleanup
-- **`test_simple_workflow.sh`** - Workflow verification
+### Environment Variable Compatibility
+- Uses **current environment variables** (not AKASH-specific ones)
+- **Automatic extraction** from provisioning profiles
+- **Fallback mechanisms** for missing variables
+- **Clear validation** and error messages
 
-## Script Comparison
+### Dart/Flutter Integration
+- **Missing file detection** and restoration
+- **Preprocessor directive fixes**
+- **Flutter project validation**
+- **Dependency management**
 
-### Before (Complex)
-```bash
-# Multiple layers of abstraction
-pre-build.sh → fix_workflow_issues.sh → comprehensive_ios_fix.sh → multiple_fix_scripts.sh
-build.sh → enhanced_build.sh → diagnose_build_issues.sh → fallback_scripts.sh
-```
+## 📋 Script Structure
 
-### After (Simple)
-```bash
-# Direct execution
-pre-build.sh → Direct setup
-build.sh → Direct build
-post-build.sh → Direct cleanup
-```
+The script is organized into 12 phases:
 
-## Script Details
-
-### 1. **`pre-build.sh`** - Pre-Build Setup
-**Purpose**: Setup environment, certificates, and dependencies
-
-**Key Features**:
-- Environment cleanup
+### Phase 1: Pre-build Cleanup and Setup
+- Flutter clean
+- Derived data cleanup
 - Keychain initialization
-- Provisioning profile setup
-- Certificate installation
-- Bundle ID updates
-- CocoaPods installation
-- Code signing configuration
 
-**Usage**:
-```bash
-./lib/scripts/ios-workflow/pre-build.sh
-```
+### Phase 2: Environment Variables Setup
+- Variable validation
+- Provisioning profile extraction
+- Default value assignment
 
-### 2. **`build.sh`** - Build Process
-**Purpose**: Build and archive the iOS app
+### Phase 3: Provisioning Profile and Certificate Setup
+- Profile installation
+- Certificate management
+- Signing identity validation
 
-**Key Features**:
-- Flutter project creation (if needed)
-- Flutter build
-- Xcode archive
-- IPA export
-- App Store Connect upload (optional)
+### Phase 4: Dart/Flutter Setup
+- Missing file fixes
+- Preprocessor directive fixes
+- Flutter project validation
 
-**Usage**:
-```bash
-./lib/scripts/ios-workflow/build.sh
-```
+### Phase 5: Bundle Identifier Update
+- Project.pbxproj updates
+- Info.plist updates
+- Entitlements updates
 
-### 3. **`post-build.sh`** - Post-Build Cleanup
-**Purpose**: Cleanup and artifact verification
+### Phase 6: CocoaPods Setup
+- Podfile.lock management
+- Pod installation
+- Dependency resolution
 
-**Key Features**:
+### Phase 7: Xcode Configuration
+- Release.xcconfig updates
+- Code signing setup
+- Project configuration
+
+### Phase 8: Flutter Build
+- Release build
+- No codesign option
+- Build logging
+
+### Phase 9: Xcode Archive
+- Workspace archive
+- Development team setup
+- Archive logging
+
+### Phase 10: IPA Export
+- ExportOptions.plist creation
+- Archive export
+- IPA generation
+
+### Phase 11: IPA Verification and Upload
+- IPA location detection
+- App Store Connect upload
+- API key management
+
+### Phase 12: Cleanup and Finalization
 - Temporary file cleanup
 - Project backup
 - Artifact listing
-- IPA verification
 
-**Usage**:
-```bash
-./lib/scripts/ios-workflow/post-build.sh
-```
-
-### 4. **`test_simple_workflow.sh`** - Workflow Test
-**Purpose**: Verify workflow readiness
-
-**Key Features**:
-- Script existence check
-- Executable permissions check
-- Tool availability check
-- Environment variable check
-
-**Usage**:
-```bash
-./lib/scripts/ios-workflow/test_simple_workflow.sh
-```
-
-## Environment Variables
+## 🔧 Environment Variables
 
 ### Required Variables
 ```bash
-APPLE_TEAM_ID="YOUR_TEAM_ID"
-CM_PROVISIONING_PROFILE="BASE64_ENCODED_PROFILE"
-CM_CERTIFICATE="BASE64_ENCODED_CERTIFICATE"
-CM_CERTIFICATE_PASSWORD="CERTIFICATE_PASSWORD"
+UUID                    # Provisioning profile UUID
+BUNDLE_ID              # App bundle identifier
+APPLE_TEAM_ID          # Apple Developer Team ID
+```
+
+### Optional Variables (with defaults)
+```bash
+CM_DISTRIBUTION_TYPE="Apple Distribution"
+CODE_SIGNING_STYLE="manual"
 VERSION_NAME="1.0.0"
 VERSION_CODE="1"
 ```
 
-### Optional Variables
+### Certificate Variables
 ```bash
-APP_STORE_CONNECT_KEY_IDENTIFIER="API_KEY_ID"
-APP_STORE_CONNECT_ISSUER_ID="ISSUER_ID"
-APP_STORE_CONNECT_API_KEY_PATH="API_KEY_URL"
+CM_PROVISIONING_PROFILE    # Base64 encoded provisioning profile
+CM_CERTIFICATE            # Base64 encoded certificate
+CM_CERTIFICATE_PASSWORD   # Certificate password
 ```
 
-## Usage Examples
-
-### Complete Workflow
+### App Store Connect Variables
 ```bash
-# Test workflow readiness
-./lib/scripts/ios-workflow/test_simple_workflow.sh
-
-# Run complete workflow
-./lib/scripts/ios-workflow/pre-build.sh
-./lib/scripts/ios-workflow/build.sh
-./lib/scripts/ios-workflow/post-build.sh
+APP_STORE_CONNECT_KEY_IDENTIFIER    # API key identifier
+APP_STORE_CONNECT_ISSUER_ID         # API issuer ID
+APP_STORE_CONNECT_API_KEY_PATH      # API key download URL
 ```
 
-### Individual Steps
+## 🚀 Usage
+
+### Basic Usage
 ```bash
-# Only pre-build setup
-./lib/scripts/ios-workflow/pre-build.sh
-
-# Only build process
-./lib/scripts/ios-workflow/build.sh
-
-# Only post-build cleanup
-./lib/scripts/ios-workflow/post-build.sh
+./lib/scripts/ios-workflow/simple_ios_build.sh
 ```
 
-## Benefits
+### With Environment Variables
+```bash
+export UUID="your-uuid"
+export BUNDLE_ID="com.yourcompany.yourapp"
+export APPLE_TEAM_ID="your-team-id"
+./lib/scripts/ios-workflow/simple_ios_build.sh
+```
 
-### 🚀 **Performance**
-- Faster execution (no complex script orchestration)
-- Direct command execution
-- Minimal overhead
+### In CI/CD Pipeline
+```yaml
+- name: Build iOS App
+  script:
+    - chmod +x lib/scripts/ios-workflow/simple_ios_build.sh
+    - ./lib/scripts/ios-workflow/simple_ios_build.sh
+```
 
-### 🔧 **Reliability**
-- Fewer points of failure
-- Direct error reporting
-- Simple debugging
+## 🔍 Error Handling
 
-### 📝 **Maintainability**
-- Easy to understand and modify
-- Clear purpose for each script
-- Minimal dependencies
+### Automatic Recovery
+- **Missing files**: Automatically restored from backups
+- **Preprocessor issues**: Automatically fixed
+- **Environment variables**: Extracted from provisioning profiles
+- **CocoaPods issues**: Automatic Podfile.lock management
 
-### 🐛 **Debugging**
-- Clear error messages
-- Direct command output
-- Simple troubleshooting
+### Clear Error Messages
+- **Specific error descriptions**
+- **Actionable solutions**
+- **Phase-specific logging**
+- **Exit codes for CI/CD**
 
-## Migration from Complex Workflow
+### Validation Steps
+- ✅ Environment variables validation
+- ✅ Signing identity verification
+- ✅ Flutter project validation
+- ✅ IPA file verification
 
-### For Existing Users
-1. **Backup current scripts** (if needed)
-2. **Test new workflow** with `test_simple_workflow.sh`
-3. **Update CI/CD** to use new scripts
-4. **Remove old complex scripts** (optional)
+## 📊 Logging and Monitoring
 
-### For New Users
-1. **Set environment variables**
-2. **Run test script** to verify setup
-3. **Execute workflow** scripts in order
+### Phase-based Logging
+Each phase provides:
+- **Start/end indicators**
+- **Progress updates**
+- **Error details**
+- **Success confirmations**
 
-## Troubleshooting
+### Build Artifacts
+- **flutter_build.log**: Flutter build output
+- **xcodebuild_archive.log**: Xcode archive output
+- **project_backup.zip**: Project backup
+- **build/ios/output/**: IPA files
+- **build/ios/archive/**: Xcode archives
+
+## 🔧 Troubleshooting
 
 ### Common Issues
 
-#### 1. **Flutter Generated Files Missing**
+#### 1. Environment Variables Missing
 ```bash
-# Solution: Run flutter pub get
-flutter pub get
+❌ UUID is not set and could not be extracted from provisioning profile
+```
+**Solution**: Set UUID environment variable or ensure provisioning profile is available
+
+#### 2. Signing Identity Issues
+```bash
+❌ No valid Apple Distribution signing identities found in keychain
+```
+**Solution**: Ensure certificate is properly installed and CM_CERTIFICATE is set
+
+#### 3. Flutter Project Issues
+```bash
+❌ Runner.xcworkspace not found
+```
+**Solution**: Script automatically creates iOS project if missing
+
+#### 4. CocoaPods Issues
+```bash
+❌ pod install failed
+```
+**Solution**: Script automatically manages Podfile.lock and retries installation
+
+### Debug Mode
+To enable verbose output, modify the script:
+```bash
+# Add this line after set -euo pipefail
+set -x  # Enable verbose shell output
 ```
 
-#### 2. **CocoaPods Installation Failed**
+## 🎯 Benefits Over Complex Workflow
+
+### Simplicity
+- **Single file** instead of multiple scripts
+- **Linear execution** instead of complex orchestration
+- **Easy debugging** with phase-based logging
+- **Self-contained** with all dependencies
+
+### Reliability
+- **Automatic error recovery**
+- **Comprehensive validation**
+- **Clear error messages**
+- **Robust fallback mechanisms**
+
+### Maintainability
+- **Clear phase structure**
+- **Well-documented sections**
+- **Consistent logging**
+- **Easy to modify**
+
+## 🔄 Migration from Complex Workflow
+
+### Replace Multiple Scripts
+Instead of:
 ```bash
-# Solution: Clean and reinstall
-cd ios
-rm -rf Pods Podfile.lock
-pod install
-cd ..
+./lib/scripts/ios-workflow/pre-build.sh
+./lib/scripts/ios-workflow/build.sh
+./lib/scripts/ios-workflow/post-build.sh
 ```
 
-#### 3. **Code Signing Issues**
+Use:
 ```bash
-# Solution: Check certificates
-security find-identity -v -p codesigning
+./lib/scripts/ios-workflow/simple_ios_build.sh
 ```
 
-#### 4. **Build Archive Failed**
-```bash
-# Solution: Check Xcode project
-xcodebuild -workspace ios/Runner.xcworkspace -list
+### Environment Variables
+The script automatically handles:
+- **Variable extraction** from provisioning profiles
+- **Default value assignment**
+- **Validation and error handling**
+- **Export for other processes**
+
+## 📈 Performance Optimizations
+
+### Cleanup Strategies
+- **Selective cleanup** based on phase
+- **Temporary file management**
+- **Derived data cleanup**
+- **Build artifact organization**
+
+### Caching
+- **Podfile.lock backup** and restoration
+- **Project backup** creation
+- **Log preservation** for debugging
+
+## 🎉 Success Indicators
+
+The script is successful when you see:
+```
+🎉 Simple iOS Build Workflow completed successfully!
+📱 IPA Location: /path/to/your/app.ipa
+📦 Archive Location: build/ios/archive/Runner.xcarchive
+📋 Build Logs: flutter_build.log, xcodebuild_archive.log
 ```
 
-## Comparison with akash_build.sh
+## 🔮 Future Enhancements
 
-The new workflow follows the same principles as `akash_build.sh`:
+### Planned Features
+- **Parallel processing** for independent phases
+- **Incremental builds** for faster development
+- **Custom phase hooks** for extensibility
+- **Advanced error recovery** mechanisms
 
-### ✅ **Similarities**
-- Direct command execution
-- Simple error handling
-- Clear logging
-- Minimal abstraction
-- Reliable execution
-
-### 🔄 **Differences**
-- Modular design (separate pre-build, build, post-build)
-- Better error reporting
-- More detailed logging
-- Easier to maintain and extend
-
-## Conclusion
-
-The simplified iOS workflow provides:
-- **Better reliability** through direct execution
-- **Easier maintenance** with clear script purposes
-- **Faster execution** with minimal overhead
-- **Better debugging** with direct error reporting
-
-This approach eliminates the complexity that was causing issues while maintaining all the necessary functionality for successful iOS builds. 
+### Integration Options
+- **CI/CD platform** specific optimizations
+- **Cloud build** service compatibility
+- **Local development** workflow integration
+- **Team collaboration** features 
