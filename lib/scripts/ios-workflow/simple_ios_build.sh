@@ -313,6 +313,27 @@ else
 fi
 
 # =============================================================================
+# PHASE 7.5: VERSION INCREMENTING
+# =============================================================================
+
+echo "🔢 Phase 7.5: Version incrementing..."
+
+# Run version incrementing script
+if [ -f "lib/scripts/ios/increment_version.sh" ]; then
+  log_info "📋 Running version increment script..."
+  source lib/scripts/ios/increment_version.sh
+  
+  # Update environment variables with new version
+  VERSION_NAME="$VERSION_NAME"
+  VERSION_CODE="$VERSION_CODE"
+  
+  log_success "✅ Version incremented to: $VERSION_NAME+$VERSION_CODE"
+else
+  log_warn "⚠️ Version increment script not found, using existing version"
+  log_info "📋 Current version: $VERSION_NAME+$VERSION_CODE"
+fi
+
+# =============================================================================
 # PHASE 8: FLUTTER BUILD
 # =============================================================================
 
@@ -431,13 +452,42 @@ if [ ! -z "${APP_STORE_CONNECT_KEY_IDENTIFIER:-}" ] && [ ! -z "${APP_STORE_CONNE
     log_success "✅ API key downloaded to $APP_STORE_CONNECT_API_KEY_PATH_New"
   fi
   
-  xcrun altool --upload-app \
-    -f "$IPA_PATH" \
-    -t ios \
-    --apiKey "$APP_STORE_CONNECT_KEY_IDENTIFIER" \
-    --apiIssuer "$APP_STORE_CONNECT_ISSUER_ID"
+  # Upload with retry logic for version conflicts
+  MAX_RETRIES=3
+  RETRY_COUNT=0
   
-  log_success "✅ Upload to App Store Connect completed"
+  while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+    log_info "📤 Upload attempt $((RETRY_COUNT + 1))/$MAX_RETRIES..."
+    
+    if xcrun altool --upload-app \
+      -f "$IPA_PATH" \
+      -t ios \
+      --apiKey "$APP_STORE_CONNECT_KEY_IDENTIFIER" \
+      --apiIssuer "$APP_STORE_CONNECT_ISSUER_ID" \
+      --verbose 2>&1 | tee testflight_upload.log; then
+      
+      log_success "✅ Upload to App Store Connect completed successfully!"
+      break
+    else
+      RETRY_COUNT=$((RETRY_COUNT + 1))
+      
+      # Check if it's a version conflict
+      if grep -q "bundle version must be higher" testflight_upload.log 2>/dev/null; then
+        log_error "❌ Version conflict detected!"
+        log_info "📋 The bundle version has already been used in TestFlight"
+        log_info "📋 Current version: $VERSION_NAME+$VERSION_CODE"
+        log_info "📋 Solution: The version has been automatically incremented"
+        log_info "📋 Please run the build script again to create a new build with the incremented version"
+        break
+      elif [ $RETRY_COUNT -lt $MAX_RETRIES ]; then
+        log_warn "⚠️ Upload failed, retrying in 5 seconds..."
+        sleep 5
+      else
+        log_error "❌ Upload to App Store Connect failed after $MAX_RETRIES attempts"
+        log_info "📋 Check testflight_upload.log for details"
+      fi
+    fi
+  done
 else
   log_warn "⚠️ App Store Connect credentials not provided, skipping upload"
 fi
