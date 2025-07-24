@@ -24,6 +24,17 @@ if [ -f "lib/scripts/ios/fix_preprocessor_directive.sh" ]; then
   fi
 fi
 
+# Fix missing files issue if it exists
+log_info "🔧 Checking for missing files..."
+if [ -f "lib/scripts/ios/fix_missing_files.sh" ]; then
+  chmod +x lib/scripts/ios/fix_missing_files.sh
+  if ./lib/scripts/ios/fix_missing_files.sh; then
+    log_success "✅ Missing files fix completed"
+  else
+    log_warn "⚠️ Missing files fix had issues, continuing..."
+  fi
+fi
+
 # Check if Runner.xcworkspace exists
 if [ ! -d "ios/Runner.xcworkspace" ]; then
   log_error "❌ Runner.xcworkspace not found"
