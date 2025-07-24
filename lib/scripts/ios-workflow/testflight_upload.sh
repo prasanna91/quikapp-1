@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # TestFlight Upload Script
-# Handles TestFlight uploads with automatic version conflict resolution
+# Handles TestFlight uploads with better error handling (no auto-incrementing)
 
 set -euo pipefail
 
@@ -21,6 +21,14 @@ if [ ! -f "$IPA_PATH" ]; then
 fi
 
 log_success "✅ IPA found at: $IPA_PATH"
+
+# Check current version
+if [ -f "pubspec.yaml" ]; then
+  CURRENT_VERSION=$(grep "version:" pubspec.yaml | head -1 | sed 's/version: //' | tr -d ' ')
+  log_info "📋 Current version: $CURRENT_VERSION"
+else
+  log_warn "⚠️ pubspec.yaml not found, cannot determine version"
+fi
 
 # Check App Store Connect credentials
 if [ -z "${APP_STORE_CONNECT_KEY_IDENTIFIER:-}" ] || [ -z "${APP_STORE_CONNECT_ISSUER_ID:-}" ]; then
@@ -60,27 +68,27 @@ while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
     --file "$IPA_PATH" \
     --apiKey "$APP_STORE_CONNECT_KEY_IDENTIFIER" \
     --apiIssuer "$APP_STORE_CONNECT_ISSUER_ID" \
-    --verbose; then
+    --verbose 2>&1 | tee testflight_upload.log; then
     
     log_success "✅ TestFlight upload completed successfully!"
     exit 0
   else
     RETRY_COUNT=$((RETRY_COUNT + 1))
     
-    if [ $RETRY_COUNT -lt $MAX_RETRIES ]; then
+    # Check if it's a version conflict
+    if grep -q "bundle version must be higher" testflight_upload.log 2>/dev/null; then
+      log_error "❌ Version conflict detected!"
+      log_info "📋 The bundle version has already been used in TestFlight"
+      log_info "📋 Current version: $CURRENT_VERSION"
+      log_info "📋 Solution: Please increment the version in pubspec.yaml and rebuild"
+      log_info "📋 Example: Change version: 1.0.0+61 to version: 1.0.0+62"
+      exit 1
+    elif [ $RETRY_COUNT -lt $MAX_RETRIES ]; then
       log_warn "⚠️ Upload failed, retrying in 5 seconds..."
       sleep 5
     else
       log_error "❌ TestFlight upload failed after $MAX_RETRIES attempts"
-      
-      # Check if it's a version conflict
-      if grep -q "bundle version must be higher" xcodebuild_archive.log 2>/dev/null; then
-        log_error "❌ Version conflict detected!"
-        log_info "📋 The bundle version has already been used in TestFlight"
-        log_info "📋 Solution: Run the build script again to increment the version"
-        log_info "📋 Or manually update the version in pubspec.yaml and Info.plist"
-      fi
-      
+      log_info "📋 Check testflight_upload.log for details"
       exit 1
     fi
   fi

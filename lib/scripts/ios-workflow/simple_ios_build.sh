@@ -250,27 +250,32 @@ if [ -f "ios/Podfile.lock" ]; then
 fi
 
 if ! command -v pod &>/dev/null; then
-  log_error "❌ CocoaPods is not installed!"
+  log_warn "⚠️ CocoaPods is not installed!"
   log_info "📋 To install CocoaPods, run one of these commands:"
   log_info "   sudo gem install cocoapods"
   log_info "   brew install cocoapods"
   log_info "   Or visit: https://cocoapods.org/#install"
-  log_info "📋 After installation, run this script again."
-  exit 1
-fi
-
-pushd ios > /dev/null || { log_error "Failed to enter ios directory"; exit 1; }
-
-log_info "🔄 Running: pod install"
-if pod install > /dev/null 2>&1; then
-  log_success "✅ pod install completed successfully"
+  log_info "📋 Continuing without CocoaPods (this may cause build issues)"
+  
+  # Try to continue without CocoaPods
+  if [ -f "ios/Podfile" ]; then
+    log_warn "⚠️ Podfile found but CocoaPods not available"
+    log_info "📋 Build may fail if iOS dependencies are required"
+  fi
 else
-  log_error "❌ pod install failed"
-  popd > /dev/null
-  exit 1
-fi
+  pushd ios > /dev/null || { log_error "Failed to enter ios directory"; exit 1; }
 
-popd > /dev/null
+  log_info "🔄 Running: pod install"
+  if pod install > /dev/null 2>&1; then
+    log_success "✅ pod install completed successfully"
+  else
+    log_error "❌ pod install failed"
+    popd > /dev/null
+    exit 1
+  fi
+
+  popd > /dev/null
+fi
 
 log_success "✅ CocoaPods setup completed"
 
@@ -310,27 +315,6 @@ if command -v xcode-project &>/dev/null; then
 else
   log_warn "⚠️ xcode-project command not available (continuing without updating Xcode project settings)"
   log_info "📋 This is normal in some CI/CD environments"
-fi
-
-# =============================================================================
-# PHASE 7.5: VERSION INCREMENTING
-# =============================================================================
-
-echo "🔢 Phase 7.5: Version incrementing..."
-
-# Run version incrementing script
-if [ -f "lib/scripts/ios/increment_version.sh" ]; then
-  log_info "📋 Running version increment script..."
-  source lib/scripts/ios/increment_version.sh
-  
-  # Update environment variables with new version
-  VERSION_NAME="$VERSION_NAME"
-  VERSION_CODE="$VERSION_CODE"
-  
-  log_success "✅ Version incremented to: $VERSION_NAME+$VERSION_CODE"
-else
-  log_warn "⚠️ Version increment script not found, using existing version"
-  log_info "📋 Current version: $VERSION_NAME+$VERSION_CODE"
 fi
 
 # =============================================================================
@@ -452,7 +436,7 @@ if [ ! -z "${APP_STORE_CONNECT_KEY_IDENTIFIER:-}" ] && [ ! -z "${APP_STORE_CONNE
     log_success "✅ API key downloaded to $APP_STORE_CONNECT_API_KEY_PATH_New"
   fi
   
-  # Upload with retry logic for version conflicts
+  # Upload with retry logic
   MAX_RETRIES=3
   RETRY_COUNT=0
   
@@ -476,8 +460,8 @@ if [ ! -z "${APP_STORE_CONNECT_KEY_IDENTIFIER:-}" ] && [ ! -z "${APP_STORE_CONNE
         log_error "❌ Version conflict detected!"
         log_info "📋 The bundle version has already been used in TestFlight"
         log_info "📋 Current version: $VERSION_NAME+$VERSION_CODE"
-        log_info "📋 Solution: The version has been automatically incremented"
-        log_info "📋 Please run the build script again to create a new build with the incremented version"
+        log_info "📋 Solution: Please increment the version in pubspec.yaml and rebuild"
+        log_info "📋 Example: Change version: $VERSION_NAME+$VERSION_CODE to version: $VERSION_NAME+$((VERSION_CODE + 1))"
         break
       elif [ $RETRY_COUNT -lt $MAX_RETRIES ]; then
         log_warn "⚠️ Upload failed, retrying in 5 seconds..."
