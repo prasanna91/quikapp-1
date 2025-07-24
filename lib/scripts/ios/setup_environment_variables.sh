@@ -3,7 +3,10 @@
 # Setup Environment Variables Script
 # Handles environment variable setup for iOS builds
 
-set -euo pipefail
+# Don't exit on error when sourced
+if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
+  set +e
+fi
 
 log_info()    { echo "ℹ️ $1"; }
 log_success() { echo "✅ $1"; }
@@ -64,13 +67,21 @@ fi
 if [ -z "$UUID" ]; then
   log_error "❌ UUID is not set and could not be extracted from provisioning profile"
   log_info "📋 Please ensure UUID environment variable is set or provisioning profile is available"
-  exit 1
+  # Only exit if not sourced
+  if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    exit 1
+  fi
+  return 1
 fi
 
 if [ -z "$BUNDLE_ID" ]; then
   log_error "❌ BUNDLE_ID is not set and could not be extracted from provisioning profile"
   log_info "📋 Please ensure BUNDLE_ID environment variable is set or provisioning profile is available"
-  exit 1
+  # Only exit if not sourced
+  if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    exit 1
+  fi
+  return 1
 fi
 
 if [ -z "$APPLE_TEAM_ID" ]; then

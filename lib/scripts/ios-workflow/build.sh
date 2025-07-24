@@ -39,7 +39,9 @@ fi
 log_info "🔧 Setting up environment variables..."
 if [ -f "lib/scripts/ios/setup_environment_variables.sh" ]; then
   chmod +x lib/scripts/ios/setup_environment_variables.sh
-  if ./lib/scripts/ios/setup_environment_variables.sh; then
+  # Source the script to get variables in current shell
+  source lib/scripts/ios/setup_environment_variables.sh
+  if [ $? -eq 0 ]; then
     log_success "✅ Environment variables setup completed"
   else
     log_error "❌ Environment variables setup failed"
